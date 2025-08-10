@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kingsley Techlab - WiFi Billing System</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* CSS Variables matching the design system */
+        :root {
+            --background: hsl(210, 24%, 9%);
+            --foreground: hsl(45, 81%, 72%);
+            --card: hsl(210, 24%, 11%);
+            --card-foreground: hsl(45, 81%, 72%);
+            --primary: hsl(45, 81%, 60%);
+            --primary-foreground: hsl(210, 24%, 9%);
+            --secondary: hsl(210, 20%, 15%);
+            --secondary-foreground: hsl(45, 81%, 72%);
+            --muted: hsl(210, 20%, 15%);
+            --muted-foreground: hsl(45, 30%, 60%);
+            --accent: hsl(45, 90%, 75%);
+            --accent-foreground: hsl(210, 24%, 9%);
+            --border: hsl(210, 20%, 20%);
+            --input: hsl(210, 20%, 15%);
+            --destructive: hsl(0, 84.2%, 60.2%);
+            --destructive-foreground: hsl(210, 40%, 98%);
+            
+            /* Custom colors */
+            --deep-navy: hsl(210, 24%, 9%);
+            --warm-gold: hsl(45, 81%, 60%);
+            --navy-variant: hsl(210, 25%, 25%);
+            --muted-navy: hsl(210, 20%, 15%);
+            --light-gold: hsl(45, 90%, 75%);
+            --rich-gold: hsl(45, 100%, 50%);
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, hsl(210, 24%, 9%), hsl(210, 25%, 25%));
+            --gradient-gold: linear-gradient(135deg, hsl(45, 81%, 60%), hsl(45, 100%, 50%));
+            --gradient-accent: linear-gradient(135deg, hsl(45, 90%, 75%), hsl(45, 81%, 60%));
+            
+            /* Shadows */
+            --shadow-gold: 0 10px 30px -10px hsl(45, 81%, 60%, 0.3);
+            --shadow-navy: 0 10px 30px -10px hsl(210, 24%, 9%, 0.5);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--gradient-primary);
+            color: var(--foreground);
+            min-height: 100vh;
+        }
+
+        /* Utility classes */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--deep-navy);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .btn-primary:hover {
+            background: var(--gradient-accent);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--primary-foreground);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--primary);
+            border: none;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--accent);
+        }
+
+        .card {
+            background: rgba(var(--card), 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-navy);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 24px 0;
+        }
+
+        .card-content {
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            color: var(--muted-foreground);
+            margin-bottom: 16px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--foreground);
+            font-size: 16px;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(var(--primary), 0.2);
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--foreground);
+            font-weight: 500;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-popular {
+            background: var(--gradient-gold);
+            color: var(--deep-navy);
+        }
+
+        /* Page styles */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            padding: 80px 0;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom right, 
+                var(--deep-navy), 
+                var(--navy-variant), 
+                var(--muted-navy)
+            );
+            opacity: 0.9;
+        }
+
+        .hero-content {
+            position: relative;
+            text-center;
+            margin-bottom: 64px;
+        }
+
+        .hero-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .hero-title h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            background: var(--gradient-gold);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-left: 16px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--muted-foreground);
+            margin-bottom: 32px;
+            max-width: 768px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 64px;
+        }
+
+        .feature-card {
+            background: rgba(var(--card), 0.5);
+            backdrop-filter: blur(12px);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-navy);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-gold);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 8px;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .package-card {
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .package-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .package-card.popular {
+            border: 2px solid var(--primary);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-gold);
+            color: var(--deep-navy);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .package-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .package-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .package-price {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .package-price .price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--foreground);
+        }
+
+        .package-price .details {
+            font-size: 14px;
+            color: var(--muted-foreground);
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--muted-foreground);
+        }
+
+        .check-icon {
+            width: 16px;
+            height: 16px;
+            color: var(--primary);
+        }
+
+        .customer-service {
+            text-align: center;
+            margin-top: 64px;
+            padding-bottom: 32px;
+        }
+
+        .service-card {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(var(--card), 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-navy);
+        }
+
+        .service-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+        }
+
+        .phone-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--foreground);
+            text-decoration: none;
+        }
+
+        .phone-number:hover {
+            color: var(--primary);
+        }
+
+        /* Icons as SVG */
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .hidden { display: none; }
+        .loading { opacity: 0.7; pointer-events: none; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title h1 { font-size: 2.5rem; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .packages-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Page -->
+    <div id="homePage">
+        <div class="hero-section">
+            <div class="hero-bg"></div>
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-title">
+                        <svg class="icon" style="width: 64px; height: 64px; color: var(--primary);" viewBox="0 0 24 24">
+                            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 5V7H15L13.5 7.5C13.1 7.4 12.6 7.4 12 7.4S10.9 7.4 10.5 7.5L9 7H3V5H9L10.5 4.5C10.9 4.6 11.4 4.6 12 4.6S13.1 4.6 13.5 4.5L15 5H21M7.5 10.5C9.4 10.5 11 12.1 11 14S9.4 17.5 7.5 17.5S4 15.9 4 14S5.6 10.5 7.5 10.5M16.5 10.5C18.4 10.5 20 12.1 20 14S18.4 17.5 16.5 17.5S13 15.9 13 14S14.6 10.5 16.5 10.5M7.5 12.5C6.7 12.5 6 13.2 6 14S6.7 15.5 7.5 15.5S9 14.8 9 14S8.3 12.5 7.5 12.5M16.5 12.5C15.7 12.5 15 13.2 15 14S15.7 15.5 16.5 15.5S18 14.8 18 14S17.3 12.5 16.5 12.5Z"/>
+                        </svg>
+                        <h1>KINGSLEY TECHLAB</h1>
+                    </div>
+                    <p class="hero-subtitle">
+                        Premium WiFi Billing System - Manage your internet packages with ease and efficiency
+                    </p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="showAdminLogin()">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M10 17L6 13L7.41 11.59L10 14.17L16.59 7.58L18 9L10 17Z"/>
+                            </svg>
+                            Admin Portal
+                        </button>
+                        <button class="btn btn-outline" onclick="showUserPortal()">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 5V7H15L13.5 7.5C13.1 7.4 12.6 7.4 12 7.4S10.9 7.4 10.5 7.5L9 7H3V5H9L10.5 4.5C10.9 4.6 11.4 4.6 12 4.6S13.1 4.6 13.5 4.5L15 5H21M7.5 10.5C9.4 10.5 11 12.1 11 14S9.4 17.5 7.5 17.5S4 15.9 4 14S5.6 10.5 7.5 10.5M16.5 10.5C18.4 10.5 20 12.1 20 14S18.4 17.5 16.5 17.5S13 15.9 13 14S14.6 10.5 16.5 10.5M7.5 12.5C6.7 12.5 6 13.2 6 14S6.7 15.5 7.5 15.5S9 14.8 9 14S8.3 12.5 7.5 12.5M16.5 12.5C15.7 12.5 15 13.2 15 14S15.7 15.5 16.5 15.5S18 14.8 18 14S17.3 12.5 16.5 12.5Z"/>
+                            </svg>
+                            Buy Internet Package
+                        </button>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg class="icon" style="color: var(--deep-navy);" viewBox="0 0 24 24">
+                                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 5V7H15L13.5 7.5C13.1 7.4 12.6 7.4 12 7.4S10.9 7.4 10.5 7.5L9 7H3V5H9L10.5 4.5C10.9 4.6 11.4 4.6 12 4.6S13.1 4.6 13.5 4.5L15 5H21M7.5 10.5C9.4 10.5 11 12.1 11 14S9.4 17.5 7.5 17.5S4 15.9 4 14S5.6 10.5 7.5 10.5M16.5 10.5C18.4 10.5 20 12.1 20 14S18.4 17.5 16.5 17.5S13 15.9 13 14S14.6 10.5 16.5 10.5M7.5 12.5C6.7 12.5 6 13.2 6 14S6.7 15.5 7.5 15.5S9 14.8 9 14S8.3 12.5 7.5 12.5M16.5 12.5C15.7 12.5 15 13.2 15 14S15.7 15.5 16.5 15.5S18 14.8 18 14S17.3 12.5 16.5 12.5Z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">High-Speed Internet</h3>
+                        <p style="color: var(--muted-foreground);">Reliable internet packages with speeds up to 50Mbps</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg class="icon" style="color: var(--deep-navy);" viewBox="0 0 24 24">
+                                <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M10 17L6 13L7.41 11.59L10 14.17L16.59 7.58L18 9L10 17Z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Secure Access</h3>
+                        <p style="color: var(--muted-foreground);">6-digit activation codes for secure internet access</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <div style="color: var(--deep-navy); font-weight: bold; font-size: 18px;">24/7</div>
+                        </div>
+                        <h3 class="feature-title">24/7 Service</h3>
+                        <p style="color: var(--muted-foreground);">Round-the-clock internet service and support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Page -->
+    <div id="adminLoginPage" class="hidden">
+        <div style="min-height: 100vh; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; padding: 16px;">
+            <div style="width: 100%; max-width: 448px;">
+                <button class="btn btn-ghost" onclick="showHome()" style="margin-bottom: 24px;">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z"/>
+                    </svg>
+                    Back to Home
+                </button>
+                
+                <div class="card">
+                    <div class="card-header" style="text-align: center;">
+                        <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+                            <div style="width: 64px; height: 64px; background: var(--gradient-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg class="icon" style="width: 32px; height: 32px; color: var(--deep-navy);" viewBox="0 0 24 24">
+                                    <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M10 17L6 13L7.41 11.59L10 14.17L16.59 7.58L18 9L10 17Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 class="card-title">Admin Login</h2>
+                        <p class="card-description">Access Kingsley Techlab Admin Portal</p>
+                    </div>
+                    <div class="card-content">
+                        <form onsubmit="handleAdminLogin(event)" style="margin-bottom: 16px;">
+                            <div style="margin-bottom: 16px;">
+                                <label class="label" for="username">Username</label>
+                                <input class="input" id="username" type="text" placeholder="Enter admin username" required>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label class="label" for="password">Password</label>
+                                <input class="input" id="password" type="password" placeholder="Enter admin password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                Login
+                            </button>
+                        </form>
+                        <div style="padding: 16px; background: rgba(var(--muted), 0.2); border-radius: 8px; border: 1px solid var(--border);">
+                            <p style="font-size: 14px; color: var(--muted-foreground); text-align: center;">
+                                Demo Credentials:<br>
+                                Username: <span style="color: var(--primary); font-weight: 500;">admin</span><br>
+                                Password: <span style="color: var(--primary); font-weight: 500;">kingsley123</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Portal Page -->
+    <div id="userPortalPage" class="hidden">
+        <div style="min-height: 100vh; background: var(--gradient-primary); padding: 16px;">
+            <div class="container">
+                <button class="btn btn-ghost" onclick="showHome()" style="margin-bottom: 24px;">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z"/>
+                    </svg>
+                    Back to Home
+                </button>
+
+                <div style="text-align: center; margin-bottom: 32px;">
+                    <h1 style="font-size: 2.5rem; font-weight: 700; background: var(--gradient-gold); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 16px;">
+                        Choose Your WiFi Package
+                    </h1>
+                    <p style="color: var(--muted-foreground); font-size: 18px;">
+                        Select the perfect internet package for your needs
+                    </p>
+                </div>
+
+                <!-- Package Selection -->
+                <div id="packageSelection">
+                    <div class="packages-grid">
+                        <div class="package-card card" onclick="selectPackage('1', 'Basic Starter', 20, 10, 8)">
+                            <div class="card-header">
+                                <div class="package-header">
+                                    <div>
+                                        <h3 class="card-title">Basic Starter</h3>
+                                        <p class="card-description">Perfect for browsing and social media</p>
+                                    </div>
+                                    <div class="package-icon">
+                                        <svg class="icon" style="color: var(--deep-navy);" viewBox="0 0 24 24">
+                                            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 5V7H15L13.5 7.5C13.1 7.4 12.6 7.4 12 7.4S10.9 7.4 10.5 7.5L9 7H3V5H9L10.5 4.5C10.9 4.6 11.4 4.6 12 4.6S13.1 4.6 13.5 4.5L15 5H21M7.5 10.5C9.4 10.5 11 12.1 11 14S9.4 17.5 7.5 17.5S4 15.9 4 14S5.6 10.5 7.5 10.5M16.5 10.5C18.4 10.5 20 12.1 20 14S18.4 17.5 16.5 17.5S13 15.9 13 14S14.6 10.5 16.5 10.5M7.5 12.5C6.7 12.5 6 13.2 6 14S6.7 15.5 7.5 15.5S9 14.8 9 14S8.3 12.5 7.5 12.5M16.5 12.5C15.7 12.5 15 13.2 15 14S15.7 15.5 16.5 15.5S18 14.8 18 14S17.3 12.5 16.5 12.5Z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="package-price">
+                                    <div class="price">KShs 20</div>
+                                    <div class="details">10 Mbps • 8 hours</div>
+                                </div>
+                                <ul class="features-list">
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        10 Mbps Speed
+                                    </li>
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        8 Hours Duration
+                                    </li>
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        Basic Support
+                                    </li>
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        Instant Activation
+                                    </li>
+                                </ul>
+                                <button class="btn btn-primary" style="width: 100%;">
+                                    Select Package
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="package-card card" onclick="selectPackage('2', 'Standard', 35, 15, 6)">
+                            <div class="card-header">
+                                <div class="package-header">
+                                    <div>
+                                        <h3 class="card-title">Standard</h3>
+                                        <p class="card-description">Good for streaming and downloads</p>
+                                    </div>
+                                    <div class="package-icon">
+                                        <svg class="icon" style="color: var(--deep-navy);" viewBox="0 0 24 24">
+                                            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 5V7H15L13.5 7.5C13.1 7.4 12.6 7.4 12 7.4S10.9 7.4 10.5 7.5L9 7H3V5H9L10.5 4.5C10.9 4.6 11.4 4.6 12 4.6S13.1 4.6 13.5 4.5L15 5H21M7.5 10.5C9.4 10.5 11 12.1 11 14S9.4 17.5 7.5 17.5S4 15.9 4 14S5.6 10.5 7.5 10.5M16.5 10.5C18.4 10.5 20 12.1 20 14S18.4 17.5 16.5 17.5S13 15.9 13 14S14.6 10.5 16.5 10.5M7.5 12.5C6.7 12.5 6 13.2 6 14S6.7 15.5 7.5 15.5S9 14.8 9 14S8.3 12.5 7.5 12.5M16.5 12.5C15.7 12.5 15 13.2 15 14S15.7 15.5 16.5 15.5S18 14.8 18 14S17.3 12.5 16.5 12.5Z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="package-price">
+                                    <div class="price">KShs 35</div>
+                                    <div class="details">15 Mbps • 6 hours</div>
+                                </div>
+                                <ul class="features-list">
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        15 Mbps Speed
+                                    </li>
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        6 Hours Duration
+                                    </li>
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        Priority Support
+                                    </li>
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        HD Streaming
+                                    </li>
+                                </ul>
+                                <button class="btn btn-primary" style="width: 100%;">
+                                    Select Package
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="package-card card popular" onclick="selectPackage('3', 'Premium', 50, 25, 12)">
+                            <div class="popular-badge">
+                                <svg style="width: 12px; height: 12px;" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/>
+                                </svg>
+                                Most Popular
+                            </div>
+                            <div class="card-header">
+                                <div class="package-header">
+                                    <div>
+                                        <h3 class="card-title">Premium</h3>
+                                        <p class="card-description">High-speed for heavy usage</p>
+                                    </div>
+                                    <div class="package-icon">
+                                        <svg class="icon" style="color: var(--deep-navy);" viewBox="0 0 24 24">
+                                            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 5V7H15L13.5 7.5C13.1 7.4 12.6 7.4 12 7.4S10.9 7.4 10.5 7.5L9 7H3V5H9L10.5 4.5C10.9 4.6 11.4 4.6 12 4.6S13.1 4.6 13.5 4.5L15 5H21M7.5 10.5C9.4 10.5 11 12.1 11 14S9.4 17.5 7.5 17.5S4 15.9 4 14S5.6 10.5 7.5 10.5M16.5 10.5C18.4 10.5 20 12.1 20 14S18.4 17.5 16.5 17.5S13 15.9 13 14S14.6 10.5 16.5 10.5M7.5 12.5C6.7 12.5 6 13.2 6 14S6.7 15.5 7.5 15.5S9 14.8 9 14S8.3 12.5 7.5 12.5M16.5 12.5C15.7 12.5 15 13.2 15 14S15.7 15.5 16.5 15.5S18 14.8 18 14S17.3 12.5 16.5 12.5Z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="package-price">
+                                    <div class="price">KShs 50</div>
+                                    <div class="details">25 Mbps • 12 hours</div>
+                                </div>
+                                <ul class="features-list">
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        25 Mbps Speed
+                                    </li>
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        12 Hours Duration
+                                    </li>
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        Premium Support
+                                    </li>
+                                    <li>
+                                        <svg class="check-icon" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                        </svg>
+                                        4K Streaming
+                                    </li>
+                                </ul>
+                                <button class="btn btn-primary" style="width: 100%;">
+                                    Select Package
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase Form -->
+                <div id="purchaseForm" class="hidden" style="max-width: 448px; margin: 0 auto;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Complete Your Purchase</h2>
+                            <p class="card-description">Enter your phone number to receive activation code</p>
+                        </div>
+                        <div class="card-content">
+                            <div id="selectedPackageInfo" style="padding: 16px; background: rgba(var(--muted), 0.2); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
+                                <!-- Package info will be inserted here -->
+                            </div>
+
+                            <div style="margin-bottom: 24px;">
+                                <label class="label" for="phoneNumber">Phone Number</label>
+                                <input class="input" id="phoneNumber" type="tel" placeholder="0796286263" maxlength="10">
+                                <p style="font-size: 12px; color: var(--muted-foreground); margin-top: 4px;">
+                                    Enter your phone number to receive activation code via SMS
+                                </p>
+                            </div>
+
+                            <div style="display: flex; gap: 12px;">
+                                <button class="btn btn-outline" onclick="goBackToPackages()" style="flex: 1;">
+                                    Back
+                                </button>
+                                <button class="btn btn-primary" onclick="handlePurchase()" style="flex: 1;" id="purchaseBtn">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M7,2V4H8V18A4,4 0 0,0 12,22A4,4 0 0,0 16,18V4H17V2H7M11,16C10.4,16 10,15.6 10,15C10,14.4 10.4,14 11,14C11.6,14 12,14.4 12,15C12,15.6 11.6,16 11,16M13,12C12.4,12 12,11.6 12,11C12,10.4 12.4,10 13,10C13.6,10 14,10.4 14,11C14,11.6 13.6,12 13,12Z"/>
+                                    </svg>
+                                    Buy Package
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase Complete -->
+                <div id="purchaseComplete" class="hidden" style="max-width: 448px; margin: 0 auto;">
+                    <div class="card">
+                        <div class="card-header" style="text-align: center;">
+                            <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+                                <div style="width: 64px; height: 64px; background: var(--gradient-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <svg class="icon" style="width: 32px; height: 32px; color: var(--deep-navy);" viewBox="0 0 24 24">
+                                        <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <h2 class="card-title">Purchase Complete!</h2>
+                            <p class="card-description">Your WiFi package has been activated</p>
+                        </div>
+                        <div class="card-content">
+                            <div style="padding: 16px; background: rgba(var(--muted), 0.2); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-bottom: 16px;">
+                                <p style="font-size: 14px; color: var(--muted-foreground); margin-bottom: 8px;">Your Activation Code</p>
+                                <p id="activationCodeDisplay" style="font-size: 2rem; font-weight: 700; font-family: monospace; color: var(--primary);"></p>
+                            </div>
+                            
+                            <div id="purchaseDetails" style="margin-bottom: 16px;">
+                                <!-- Purchase details will be inserted here -->
+                            </div>
+
+                            <div style="padding: 12px; background: rgba(var(--primary), 0.1); border-radius: 8px; border: 1px solid rgba(var(--primary), 0.2); margin-bottom: 24px;">
+                                <p style="font-size: 12px; color: var(--muted-foreground); text-align: center;">
+                                    Connect to Kingsley Techlab WiFi network and enter your activation code to start browsing.
+                                    Timer starts when you connect.
+                                </p>
+                            </div>
+
+                            <button class="btn btn-primary" onclick="showHome()" style="width: 100%;">
+                                Back to Home
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Service -->
+                <div class="customer-service">
+                    <div class="service-card">
+                        <div style="text-align: center;">
+                            <p style="color: var(--muted-foreground); font-size: 14px; margin-bottom: 8px;">Need Help? Contact Customer Service</p>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <div class="service-icon">
+                                    <svg style="width: 16px; height: 16px; color: var(--deep-navy);" viewBox="0 0 24 24">
+                                        <path fill="currentColor" d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/>
+                                    </svg>
+                                </div>
+                                <a href="tel:0796286263" class="phone-number">0796286263</a>
+                            </div>
+                            <p style="font-size: 12px; color: var(--muted-foreground); margin-top: 4px;">Available 24/7 for support</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPackageData = null;
+
+        function showHome() {
+            document.getElementById('homePage').classList.remove('hidden');
+            document.getElementById('adminLoginPage').classList.add('hidden');
+            document.getElementById('userPortalPage').classList.add('hidden');
+        }
+
+        function showAdminLogin() {
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('adminLoginPage').classList.remove('hidden');
+            document.getElementById('userPortalPage').classList.add('hidden');
+        }
+
+        function showUserPortal() {
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('adminLoginPage').classList.add('hidden');
+            document.getElementById('userPortalPage').classList.remove('hidden');
+            resetUserPortal();
+        }
+
+        function resetUserPortal() {
+            document.getElementById('packageSelection').classList.remove('hidden');
+            document.getElementById('purchaseForm').classList.add('hidden');
+            document.getElementById('purchaseComplete').classList.add('hidden');
+            selectedPackageData = null;
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'kingsley123') {
+                alert('Login Successful! Welcome to Kingsley Techlab Admin Portal');
+                // In a real app, this would redirect to admin dashboard
+            } else {
+                alert('Login Failed! Invalid credentials. Please try again.');
+            }
+        }
+
+        function selectPackage(id, name, price, speed, duration) {
+            selectedPackageData = { id, name, price, speed, duration };
+            
+            // Show purchase form
+            document.getElementById('packageSelection').classList.add('hidden');
+            document.getElementById('purchaseForm').classList.remove('hidden');
+            
+            // Update package info
+            document.getElementById('selectedPackageInfo').innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-weight: 600; color: var(--foreground);">${name}</span>
+                    <div class="badge">${speed} Mbps</div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: var(--muted-foreground);">
+                    <span>Duration: ${duration} hours</span>
+                    <span style="font-size: 20px; font-weight: 700; color: var(--foreground);">KShs ${price}</span>
+                </div>
+            `;
+        }
+
+        function goBackToPackages() {
+            document.getElementById('packageSelection').classList.remove('hidden');
+            document.getElementById('purchaseForm').classList.add('hidden');
+            selectedPackageData = null;
+        }
+
+        function generateActivationCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function handlePurchase() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            
+            if (!selectedPackageData || !phoneNumber) {
+                alert('Please select a package and enter your phone number');
+                return;
+            }
+
+            if (!/^07\d{8}$/.test(phoneNumber)) {
+                alert('Please enter a valid phone number (format: 0796286263)');
+                return;
+            }
+
+            // Show loading state
+            const purchaseBtn = document.getElementById('purchaseBtn');
+            purchaseBtn.innerHTML = `
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 16px; height: 16px; border: 2px solid var(--deep-navy); border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px;"></div>
+                    Processing...
+                </div>
+            `;
+            purchaseBtn.disabled = true;
+
+            // Simulate processing delay
+            setTimeout(() => {
+                const activationCode = generateActivationCode();
+                
+                // Show purchase complete page
+                document.getElementById('purchaseForm').classList.add('hidden');
+                document.getElementById('purchaseComplete').classList.remove('hidden');
+                
+                // Update activation code
+                document.getElementById('activationCodeDisplay').textContent = activationCode;
+                
+                // Update purchase details
+                document.getElementById('purchaseDetails').innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="color: var(--muted-foreground);">Package:</span>
+                        <span style="color: var(--foreground); font-weight: 500;">${selectedPackageData.name}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="color: var(--muted-foreground);">Speed:</span>
+                        <span style="color: var(--foreground); font-weight: 500;">${selectedPackageData.speed} Mbps</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="color: var(--muted-foreground);">Duration:</span>
+                        <span style="color: var(--foreground); font-weight: 500;">${selectedPackageData.duration} hours</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--muted-foreground);">Amount Paid:</span>
+                        <span style="color: var(--foreground); font-weight: 500;">KShs ${selectedPackageData.price}</span>
+                    </div>
+                `;
+                
+                // Reset purchase button
+                purchaseBtn.innerHTML = `
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M7,2V4H8V18A4,4 0 0,0 12,22A4,4 0 0,0 16,18V4H17V2H7M11,16C10.4,16 10,15.6 10,15C10,14.4 10.4,14 11,14C11.6,14 12,14.4 12,15C12,15.6 11.6,16 11,16M13,12C12.4,12 12,11.6 12,11C12,10.4 12.4,10 13,10C13.6,10 14,10.4 14,11C14,11.6 13.6,12 13,12Z"/>
+                    </svg>
+                    Buy Package
+                `;
+                purchaseBtn.disabled = false;
+                
+                alert(`Purchase Successful! Your activation code is ${activationCode}. Check your SMS for details.`);
+            }, 3000);
+        }
+
+        // Add spin animation for loading spinner
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

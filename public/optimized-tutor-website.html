@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Best Tutor | Assignment Help for Students</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --primary: #00B4D8;
+      --accent: #FF5722;
+      --background: #fff;
+      --foreground: #000;
+      --card: #fff;
+      --muted: #f5f5f5;
+      --border: #ddd;
+      --radius: 0.5rem;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--primary);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo {
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
+      font-weight: bold;
+      color: white;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
+      padding: 0.5rem;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(rgba(0, 180, 216, 0.8), rgba(0, 180, 216, 0.8)), url('https://picsum.photos/1600/900') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      padding: 2rem 1rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 6vw, 3rem);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      margin-bottom: 2rem;
+      max-width: 600px;
+    }
+
+    .cta-button {
+      background: var(--accent);
+      color: white;
+      padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem);
+      border: none;
+      border-radius: var(--radius);
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .cta-button:hover {
+      transform: scale(1.05);
+    }
+
+    .section {
+      padding: clamp(2rem, 8vw, 4rem) clamp(1rem, 4vw, 2rem);
+      background: var(--background);
+    }
+
+    .section.bg-muted {
+      background: var(--muted);
+    }
+
+    .section h2 {
+      text-align: center;
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      margin-bottom: 2rem;
+      line-height: 1.2;
+    }
+
+    .section h3 {
+      font-size: clamp(1.25rem, 4vw, 2rem);
+      margin-bottom: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: clamp(1rem, 3vw, 2rem);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .grid-pricing {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: clamp(1rem, 3vw, 2rem);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .grid-contact {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: clamp(1rem, 3vw, 2rem);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(1.5rem, 4vw, 2rem);
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .pricing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .pricing-card.popular {
+      border: 2px solid var(--accent);
+    }
+
+    .form {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form input {
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+      font-size: 1rem;
+    }
+
+    footer {
+      background: var(--primary);
+      color: white;
+      padding: clamp(1.5rem, 4vw, 2rem);
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .earning-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--primary);
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .nav-links a {
+        padding: 0.75rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .hero {
+        min-height: 90vh;
+        padding: 1rem;
+      }
+
+      .form {
+        flex-direction: column;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-pricing {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-contact {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+
+      .earning-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 2rem 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .earning-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-contact {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        padding: 0.75rem;
+      }
+    }
+
+    /* Utility classes for responsive text */
+    .text-responsive-lg {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .text-responsive-md {
+      font-size: clamp(1.125rem, 3vw, 1.25rem);
+    }
+
+    .text-responsive-sm {
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-background text-foreground font-sans">
+  <!-- Responsive Navigation -->
+  <nav>
+    <div class="logo">Best Tutor</div>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+      <i data-lucide="Menu"></i>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#services">Services</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#order">Order</a>
+      <a href="#writers">Writers</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div>
+      <h1>Need Help With Assignments?</h1>
+      <p>Essays, Projects, Research Papers & More. Fast, Affordable, Confidential.</p>
+      <a href="https://wa.me/19794002305" target="_blank" class="cta-button">
+        <i data-lucide="MessageCircle" class="h-5 w-5"></i>
+        Chat on WhatsApp
+      </a>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="section">
+    <div class="container">
+      <h2>Our Services</h2>
+      <div class="grid">
+        <div class="card">
+          <i data-lucide="FileText" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <p class="text-responsive-md"><strong>Custom Essay Writing</strong></p>
+        </div>
+        <div class="card">
+          <i data-lucide="Search" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <p class="text-responsive-md"><strong>Research Papers & Case Studies</strong></p>
+        </div>
+        <div class="card">
+          <i data-lucide="Users" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <p class="text-responsive-md"><strong>Online Class Assistance</strong></p>
+        </div>
+        <div class="card">
+          <i data-lucide="Edit3" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <p class="text-responsive-md"><strong>Editing & Proofreading</strong></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="section bg-muted">
+    <div class="container">
+      <h2 class="text-responsive-lg font-bold text-center text-foreground mb-4">
+        Secure Payment
+      </h2>
+      <p class="text-responsive-md text-center text-muted-foreground mb-8">
+        Choose your package. Pay securely. Submit your assignment.
+      </p>
+      <div class="grid-pricing">
+        <!-- Pricing Card 1: $25 -->
+        <div class="pricing-card">
+          <div class="p-4 text-center">
+            <h3 class="text-responsive-lg font-bold text-primary mb-2">$25</h3>
+            <p class="text-muted-foreground mb-4">1–3 pages</p>
+            <a href="https://buy.stripe.com/eVq6oHeNZ4Qheu1ekpdUY02" target="_blank" class="cta-button w-full">
+              Pay with Stripe
+            </a>
+          </div>
+        </div>
+
+        <!-- Pricing Card 2: $50 (Most Popular) -->
+        <div class="pricing-card popular">
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+            <span class="bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold">
+              Most Popular
+            </span>
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="text-responsive-lg font-bold text-primary mb-2">$50</h3>
+            <p class="text-muted-foreground mb-4">4–7 pages</p>
+            <a href="https://buy.stripe.com/6oUeVd5dpdmN0Db7W1dUY03" target="_blank" class="cta-button w-full">
+              Pay with Stripe
+            </a>
+          </div>
+        </div>
+
+        <!-- Pricing Card 3: $75 -->
+        <div class="pricing-card">
+          <div class="p-4 text-center">
+            <h3 class="text-responsive-lg font-bold text-primary mb-2">$75</h3>
+            <p class="text-muted-foreground mb-4">8–12 pages</p>
+            <a href="https://buy.stripe.com/6oUcN535h96xdpX1xDdUY04" target="_blank" class="cta-button w-full">
+              Pay with Stripe
+            </a>
+          </div>
+        </div>
+
+        <!-- Pricing Card 4: $100 -->
+        <div class="pricing-card">
+          <div class="p-4 text-center">
+            <h3 class="text-responsive-lg font-bold text-primary mb-2">$100</h3>
+            <p class="text-muted-foreground mb-4">13+ pages</p>
+            <a href="https://buy.stripe.com/6oU4gz21d5UlgC91xDdUY05" target="_blank" class="cta-button w-full">
+              Pay with Stripe
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Order Section -->
+  <section id="order" class="section bg-background">
+    <div class="container text-center">
+      <h2 class="text-responsive-lg font-bold text-foreground mb-4">Place Your Order</h2>
+      <p class="text-responsive-md text-muted-foreground mb-8">After completing payment, submit your assignment via the buttons below.</p>
+      <div class="flex flex-col md:flex-row gap-4 justify-center max-w-2xl mx-auto">
+        <a href="mailto:tutorwork03@gmail.com?subject=Assignment Submission" class="flex-1">
+          <button class="w-full cta-button py-4 text-lg inline-flex items-center justify-center gap-3">
+            <i data-lucide="Mail" class="h-6 w-6"></i>
+            Email Assignment
+          </button>
+        </a>
+        <a href="https://wa.me/19794002305" target="_blank" class="flex-1">
+          <button class="w-full cta-button py-4 text-lg inline-flex items-center justify-center gap-3">
+            <i data-lucide="MessageCircle" class="h-6 w-6"></i>
+            WhatsApp Assignment
+          </button>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Writers Section -->
+  <section id="writers" class="section bg-muted">
+    <div class="container">
+      <h2 class="text-responsive-lg font-bold text-center text-foreground mb-4">Join as a Writer</h2>
+      <p class="text-responsive-md text-center text-muted-foreground mb-8">Flexible hours. Competitive pay. Hundreds of monthly orders.</p>
+      
+      <div class="grid mb-8">
+        <div class="card">
+          <i data-lucide="FileText" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <span class="font-medium text-responsive-sm">Dozens of New Orders Daily</span>
+        </div>
+        <div class="card">
+          <i data-lucide="MessageCircle" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <span class="font-medium text-responsive-sm">Talk Directly With Clients</span>
+        </div>
+        <div class="card">
+          <i data-lucide="DollarSign" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <span class="font-medium text-responsive-sm">Set Your Own Rates</span>
+        </div>
+        <div class="card">
+          <i data-lucide="Clock" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <span class="font-medium text-responsive-sm">Work When You Want</span>
+        </div>
+        <div class="card">
+          <i data-lucide="Star" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <span class="font-medium text-responsive-sm">Rate Clients</span>
+        </div>
+        <div class="card">
+          <i data-lucide="Calendar" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <span class="font-medium text-responsive-sm">Bi-monthly Payments</span>
+        </div>
+      </div>
+
+      <!-- Earning Tiers -->
+      <h3 class="text-responsive-lg font-bold text-center text-foreground mb-6">Earning Potential</h3>
+      <div class="earning-grid">
+        <div class="bg-blue-100 text-blue-800 rounded-lg p-4 text-center">
+          <h4 class="font-bold text-responsive-md mb-2">Beginner</h4>
+          <p class="font-semibold text-responsive-sm">$150–$500/month</p>
+        </div>
+        <div class="bg-green-100 text-green-800 rounded-lg p-4 text-center">
+          <h4 class="font-bold text-responsive-md mb-2">Intermediate</h4>
+          <p class="font-semibold text-responsive-sm">$600–$900/month</p>
+        </div>
+        <div class="bg-yellow-100 text-yellow-800 rounded-lg p-4 text-center">
+          <h4 class="font-bold text-responsive-md mb-2">Advanced</h4>
+          <p class="font-semibold text-responsive-sm">$1000–$1400/month</p>
+        </div>
+        <div class="bg-purple-100 text-purple-800 rounded-lg p-4 text-center">
+          <h4 class="font-bold text-responsive-md mb-2">Expert</h4>
+          <p class="font-semibold text-responsive-sm">$1500–$2000/month</p>
+        </div>
+      </div>
+
+      <!-- Application Steps -->
+      <h3 class="text-responsive-lg font-bold text-center text-foreground mb-6">How to Apply</h3>
+      <div class="steps-grid">
+        <div class="card">
+          <i data-lucide="FileText" class="h-10 w-10 text-primary mx-auto mb-3"></i>
+          <span class="text-responsive-sm font-medium">Submit Info</span>
+        </div>
+        <div class="card">
+          <i data-lucide="Pencil" class="h-10 w-10 text-primary mx-auto mb-3"></i>
+          <span class="text-responsive-sm font-medium">Pass a Short Test</span>
+        </div>
+        <div class="card">
+          <i data-lucide="Edit3" class="h-10 w-10 text-primary mx-auto mb-3"></i>
+          <span class="text-responsive-sm font-medium">Write Intro Essay</span>
+        </div>
+        <div class="card">
+          <i data-lucide="CreditCard" class="h-10 w-10 text-primary mx-auto mb-3"></i>
+          <span class="text-responsive-sm font-medium">Upload ID + Diploma</span>
+        </div>
+        <div class="card">
+          <i data-lucide="DollarSign" class="h-10 w-10 text-primary mx-auto mb-3"></i>
+          <span class="text-responsive-sm font-medium">Select Payment Method</span>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a href="mailto:tutorwork03@gmail.com?subject=Writer Application" target="_blank">
+          <button class="cta-button">
+            <i data-lucide="Target" class="h-6 w-6"></i>
+            Apply Now
+          </button>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="section bg-background">
+    <div class="container">
+      <h2 class="text-responsive-lg font-bold text-center text-foreground mb-8">Contact & Support</h2>
+      <div class="grid-contact">
+        <!-- Email -->
+        <div class="card">
+          <i data-lucide="Mail" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <h3 class="font-semibold mb-2 text-responsive-md">Email</h3>
+          <a href="mailto:tutorwork03@gmail.com" target="_blank" rel="noopener noreferrer">
+            <button class="w-full flex items-center justify-center gap-2 bg-muted hover:bg-primary text-primary hover:text-white px-4 py-2 rounded-md transition-colors duration-300 text-responsive-sm">
+              <span>Email Us</span>
+            </button>
+          </a>
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="card">
+          <i data-lucide="MessageCircle" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <h3 class="font-semibold mb-2 text-responsive-md">WhatsApp</h3>
+          <a href="https://wa.me/19794002305" target="_blank" rel="noopener noreferrer">
+            <button class="w-full flex items-center justify-center gap-2 bg-muted hover:bg-green-500 text-primary hover:text-white px-4 py-2 rounded-md transition-colors duration-300 text-responsive-sm">
+              <span>Chat on WhatsApp</span>
+            </button>
+          </a>
+        </div>
+
+        <!-- Instagram -->
+        <div class="card">
+          <i data-lucide="Instagram" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <h3 class="font-semibold mb-2 text-responsive-md">Instagram</h3>
+          <a href="https://instagram.com/best..tutor" target="_blank" rel="noopener noreferrer">
+            <button class="w-full flex items-center justify-center gap-2 bg-muted hover:bg-purple-500 text-primary hover:text-white px-4 py-2 rounded-md transition-colors duration-300 text-responsive-sm">
+              <span>Follow Us</span>
+            </button>
+          </a>
+        </div>
+
+        <!-- Availability -->
+        <div class="card">
+          <i data-lucide="Clock" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+          <h3 class="font-semibold mb-2 text-responsive-md">Availability</h3>
+          <p class="text-muted-foreground text-responsive-sm">Available 24/7 for urgent help</p>
+        </div>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="max-w-md mx-auto mt-12">
+        <h3 class="text-responsive-lg font-bold text-center text-foreground mb-6">Stay Updated</h3>
+        <form onsubmit="handleNewsletter(event)" class="form">
+          <input
+            type="email"
+            id="email"
+            placeholder="Enter your email to receive offers & updates"
+            required
+            class="px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-responsive-sm"
+          />
+          <button type="submit" class="cta-button justify-center">
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+   
+  <!-- Footer -->
+  <footer class="bg-primary text-primary-foreground">
+    <div class="container">
+      <div class="text-center">
+        <div class="flex flex-wrap justify-center gap-4 mb-6 text-responsive-sm">
+          <a href="#services" class="hover:text-accent transition-colors">Services</a>
+          <span class="text-muted-foreground">|</span>
+          <a href="#order" class="hover:text-accent transition-colors">Order</a>
+          <span class="text-muted-foreground">|</span>
+          <a href="#writers" class="hover:text-accent transition-colors">Become a Writer</a>
+          <span class="text-muted-foreground">|</span>
+          <a href="#contact" class="hover:text-accent transition-colors">Support</a>
+        </div>
+        <p class="text-muted-foreground text-responsive-sm">© 2025 Best Tutor. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const navLinks = document.getElementById('navLinks');
+      navLinks.classList.toggle('active');
+    }
+
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('active');
+      });
+    });
+
+    // Newsletter Script
+    function handleNewsletter(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      if (email) {
+        alert('Subscribed!');
+        document.getElementById('email').value = '';
+      }
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+      const nav = document.querySelector('nav');
+      const navLinks = document.getElementById('navLinks');
+      if (!nav.contains(e.target) && navLinks.classList.contains('active')) {
+        navLinks.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>
