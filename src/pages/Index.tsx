@@ -32,17 +32,17 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-br from-kingsley-deep-navy via-kingsley-navy-variant to-kingsley-muted-navy opacity-90"></div>
-        <div className="relative container mx-auto px-4 py-16 md:py-20">
+        <div className="relative container mx-auto px-4 safe-px py-16 md:py-20">
           <div className="text-center mb-12 md:mb-16">
             <div className="flex items-center justify-center mb-6">
               <Wifi className="h-12 w-12 sm:h-16 sm:w-16 text-primary mr-4" />
-              <h1 className="text-4xl sm:text-6xl font-bold bg-gradient-gold bg-clip-text text-transparent">
+              <h1 className="text-4xl sm:text-6xl font-bold bg-gradient-gold bg-clip-text text-transparent text-balance leading-tight">
                 KINGSLEY TECHLAB
               </h1>
             </div>
-            <p className="text-base sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-balance">
               Premium WiFi Billing System - Manage your internet packages with ease and efficiency
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

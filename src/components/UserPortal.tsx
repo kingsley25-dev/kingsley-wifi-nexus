@@ -147,7 +147,7 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
 
   if (isPurchaseComplete && activationCode) {
     return (
-      <div className="min-h-screen bg-gradient-primary flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center p-4 safe-px safe-pt safe-pb">
         <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm border-border shadow-navy">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
@@ -205,7 +205,7 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary p-4">
+    <div className="min-h-screen bg-gradient-primary p-4 safe-px safe-pt safe-pb">
       <div className="container mx-auto">
         <Button 
           variant="ghost" 
@@ -217,10 +217,10 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
         </Button>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-gold bg-clip-text text-transparent mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-gold bg-clip-text text-transparent mb-4 text-balance leading-tight">
             Choose Your WiFi Package
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg text-balance">
             Select the perfect internet package for your needs
           </p>
         </div>
@@ -269,7 +269,7 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
                     {pkg.features.map((feature, index) => (
                       <div key={index} className="flex items-center text-sm">
                         <Check className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                        <span className="text-muted-foreground">{feature}</span>
+                        <span className="text-muted-foreground break-words">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -314,6 +314,9 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
                   <Input
                     id="phone"
                     type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    autoComplete="tel"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="0796286263"
