@@ -217,7 +217,7 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
         </Button>
 
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-gold bg-clip-text text-transparent mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-gold bg-clip-text text-transparent mb-4">
             Choose Your WiFi Package
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -227,7 +227,7 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
 
         {/* Package Selection */}
         {!selectedPackage ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {packages.map((pkg) => (
               <Card 
                 key={pkg.id} 
@@ -326,11 +326,11 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex space-x-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     variant="outline"
                     onClick={() => setSelectedPackage(null)}
-                    className="flex-1 border-border text-foreground"
+                    className="flex-1 border-border text-foreground w-full sm:w-auto"
                     disabled={isProcessing}
                   >
                     Back
@@ -338,7 +338,7 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
                   <Button
                     onClick={handlePurchase}
                     disabled={isProcessing || !phoneNumber}
-                    className="flex-1 bg-gradient-gold hover:bg-gradient-accent text-kingsley-deep-navy font-semibold"
+                    className="flex-1 bg-gradient-gold hover:bg-gradient-accent text-kingsley-deep-navy font-semibold w-full sm:w-auto"
                   >
                     {isProcessing ? (
                       <div className="flex items-center">
