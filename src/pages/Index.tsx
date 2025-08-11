@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { UserPortal } from "@/components/UserPortal";
 import { LoginForm } from "@/components/LoginForm";
 import { Button } from "@/components/ui/button";
 import { Wifi, ShieldCheck } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<'home' | 'admin' | 'user' | 'adminLogin'>('home');
@@ -14,12 +15,27 @@ const Index = () => {
     setCurrentView('admin');
   };
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      const authed = !!data.session;
+      setIsAdminLoggedIn(authed);
+      if (authed) setCurrentView('admin');
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const authed = !!session;
+      setIsAdminLoggedIn(authed);
+      if (authed) setCurrentView('admin');
+    });
+    return () => { sub.subscription.unsubscribe(); };
+  }, []);
+
   if (currentView === 'adminLogin') {
     return <LoginForm onLogin={handleAdminLogin} onBack={() => setCurrentView('home')} />;
   }
 
   if (currentView === 'admin' && isAdminLoggedIn) {
-    return <AdminDashboard onLogout={() => {
+    return <AdminDashboard onLogout={async () => {
+      await supabase.auth.signOut();
       setIsAdminLoggedIn(false);
       setCurrentView('home');
     }} />;
