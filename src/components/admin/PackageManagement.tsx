@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Package, Plus, Edit, Trash2, Wifi } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface WifiPackage {
   id: string;
@@ -19,7 +18,16 @@ interface WifiPackage {
 }
 
 export const PackageManagement = () => {
-  const [packages, setPackages] = useState<WifiPackage[]>([]);
+  const [packages, setPackages] = useState<WifiPackage[]>([
+    { id: "1", name: "Basic Starter", price: 20, speed: 10, duration: 8, description: "Perfect for browsing and social media" },
+    { id: "2", name: "Standard", price: 35, speed: 15, duration: 6, description: "Good for streaming and downloads" },
+    { id: "3", name: "Premium", price: 50, speed: 25, duration: 12, description: "High-speed for heavy usage" },
+    { id: "4", name: "Ultra Fast", price: 80, speed: 35, duration: 24, description: "Maximum speed for power users" },
+    { id: "5", name: "Business", price: 120, speed: 50, duration: 48, description: "Professional package for businesses" },
+    { id: "6", name: "Student Special", price: 15, speed: 8, duration: 4, description: "Affordable option for students" },
+    { id: "7", name: "Night Owl", price: 30, speed: 20, duration: 10, description: "Perfect for late night browsing" }
+  ]);
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPackage, setEditingPackage] = useState<WifiPackage | null>(null);
   const [newPackage, setNewPackage] = useState<Omit<WifiPackage, 'id'>>({
@@ -31,99 +39,52 @@ export const PackageManagement = () => {
   });
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchPackages = async () => {
-      const { data, error } = await supabase
-        .from('packages')
-        .select('id, name, price, description, speed_mbps, duration_hours, speed, duration_days')
-        .order('created_at', { ascending: false });
-      if (error) {
-        toast({ title: 'Error loading packages', description: error.message, variant: 'destructive' });
-        return;
-      }
-      const mapped = (data || []).map((row: any) => ({
-        id: row.id,
-        name: row.name,
-        price: Number(row.price),
-        speed: row.speed_mbps ?? (parseInt((row.speed || '0').replace(/\D/g, '')) || 0),
-        duration: row.duration_hours ?? (row.duration_days ? row.duration_days * 24 : 0),
-        description: row.description || '',
-      }));
-      setPackages(mapped);
-    };
-    fetchPackages();
-  }, [toast]);
-
-  const handleAddPackage = async () => {
+  const handleAddPackage = () => {
     if (!newPackage.name || newPackage.price <= 0 || newPackage.speed <= 0 || newPackage.duration <= 0) {
-      toast({ title: "Validation Error", description: "Please fill all fields with valid values", variant: "destructive" });
+      toast({
+        title: "Validation Error",
+        description: "Please fill all fields with valid values",
+        variant: "destructive"
+      });
       return;
     }
 
-    const durationDays = Math.max(1, Math.ceil(newPackage.duration / 24));
+    const packageToAdd: WifiPackage = {
+      id: Date.now().toString(),
+      ...newPackage
+    };
 
-    const { data, error } = await supabase
-      .from('packages')
-      .insert({
-        name: newPackage.name,
-        price: newPackage.price,
-        description: newPackage.description,
-        speed: `${newPackage.speed} Mbps`,
-        speed_mbps: newPackage.speed,
-        duration_hours: newPackage.duration,
-        duration_days: durationDays,
-      })
-      .select('id')
-      .single();
-
-    if (error) {
-      toast({ title: 'Error adding package', description: error.message, variant: 'destructive' });
-      return;
-    }
-
-    const packageToAdd: WifiPackage = { id: data.id, ...newPackage };
-    setPackages([packageToAdd, ...packages]);
+    setPackages([...packages, packageToAdd]);
     setNewPackage({ name: "", price: 0, speed: 0, duration: 0, description: "" });
     setIsDialogOpen(false);
-    toast({ title: 'Package Added', description: `${newPackage.name} has been added successfully` });
+    
+    toast({
+      title: "Package Added",
+      description: `${newPackage.name} has been added successfully`,
+    });
   };
 
-  const handleEditPackage = async () => {
+  const handleEditPackage = () => {
     if (!editingPackage) return;
-    const durationDays = Math.max(1, Math.ceil(editingPackage.duration / 24));
 
-    const { error } = await supabase
-      .from('packages')
-      .update({
-        name: editingPackage.name,
-        price: editingPackage.price,
-        description: editingPackage.description,
-        speed: `${editingPackage.speed} Mbps`,
-        speed_mbps: editingPackage.speed,
-        duration_hours: editingPackage.duration,
-        duration_days: durationDays,
-      })
-      .eq('id', editingPackage.id);
-
-    if (error) {
-      toast({ title: 'Error updating package', description: error.message, variant: 'destructive' });
-      return;
-    }
-
-    setPackages(packages.map(pkg => pkg.id === editingPackage.id ? editingPackage : pkg));
+    setPackages(packages.map(pkg => 
+      pkg.id === editingPackage.id ? editingPackage : pkg
+    ));
     setEditingPackage(null);
     setIsDialogOpen(false);
-    toast({ title: 'Package Updated', description: `${editingPackage.name} has been updated successfully` });
+    
+    toast({
+      title: "Package Updated",
+      description: `${editingPackage.name} has been updated successfully`,
+    });
   };
 
-  const handleDeletePackage = async (id: string) => {
-    const { error } = await supabase.from('packages').delete().eq('id', id);
-    if (error) {
-      toast({ title: 'Error deleting package', description: error.message, variant: 'destructive' });
-      return;
-    }
+  const handleDeletePackage = (id: string) => {
     setPackages(packages.filter(pkg => pkg.id !== id));
-    toast({ title: 'Package Deleted', description: 'Package has been removed successfully' });
+    toast({
+      title: "Package Deleted",
+      description: "Package has been removed successfully",
+    });
   };
 
   const openEditDialog = (pkg: WifiPackage) => {

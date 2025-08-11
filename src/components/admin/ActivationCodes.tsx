@@ -4,13 +4,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Key, Mail, Copy, CheckCircle, Plus } from "lucide-react";
+import { Search, Key, Mail, Copy, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
-interface ActivationCodeView {
+interface ActivationCode {
   id: string;
   code: string;
   phoneNumber: string;
@@ -21,16 +18,8 @@ interface ActivationCodeView {
   usedAt?: string;
 }
 
-interface PackageOption {
-  id: string;
-  name: string;
-  price: number;
-  duration_hours: number | null;
-  duration_days: number | null;
-}
-
 export const ActivationCodes = () => {
-  const [codes, setCodes] = useState<ActivationCodeView[]>([
+  const [codes, setCodes] = useState<ActivationCode[]>([
     {
       id: "1",
       code: "789123",
@@ -66,7 +55,7 @@ export const ActivationCodes = () => {
   const [emailsSent, setEmailsSent] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const sendEmailNotification = async (code: ActivationCodeView) => {
+  const sendEmailNotification = async (code: ActivationCode) => {
     // Simulate sending email to murithimarkray@gmail.com
     const emailContent = `
 New WiFi Package Purchase - Kingsley Techlab
@@ -119,7 +108,7 @@ The customer has been sent their activation code.
     const interval = setInterval(() => {
       // Simulate a new purchase occasionally
       if (Math.random() < 0.1) { // 10% chance every 30 seconds
-        const newCode: ActivationCodeView = {
+        const newCode: ActivationCode = {
           id: Date.now().toString(),
           code: Math.floor(100000 + Math.random() * 900000).toString(),
           phoneNumber: `079${Math.floor(1000000 + Math.random() * 9000000)}`,

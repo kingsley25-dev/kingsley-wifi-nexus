@@ -45,7 +45,7 @@ export const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
 
       <div className="container mx-auto px-4 py-8">
         {/* Quick Stats */}
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
           <Card className="bg-card/80 backdrop-blur-sm border-border shadow-navy">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Active Users</CardTitle>
@@ -93,20 +93,20 @@ export const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
 
         {/* Main Content */}
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="sticky top-0 z-20 bg-secondary/60 backdrop-blur-sm border border-border rounded-xl p-1 flex flex-nowrap gap-2 overflow-x-auto w-full safe-pt safe-px">
-            <TabsTrigger value="users" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground w-full sm:w-auto whitespace-nowrap flex-1 sm:flex-none">
+          <TabsList className="bg-secondary/50 backdrop-blur-sm border border-border flex flex-wrap gap-2 overflow-x-auto">
+            <TabsTrigger value="users" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground w-full sm:w-auto">
               <Users className="mr-2 h-4 w-4" />
               User Management
             </TabsTrigger>
-            <TabsTrigger value="packages" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground w-full sm:w-auto whitespace-nowrap flex-1 sm:flex-none">
+            <TabsTrigger value="packages" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground w-full sm:w-auto">
               <Package className="mr-2 h-4 w-4" />
               Package Management
             </TabsTrigger>
-            <TabsTrigger value="codes" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground w-full sm:w-auto whitespace-nowrap flex-1 sm:flex-none">
+            <TabsTrigger value="codes" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground w-full sm:w-auto">
               <Settings className="mr-2 h-4 w-4" />
               Activation Codes
             </TabsTrigger>
-            <TabsTrigger value="stats" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground w-full sm:w-auto whitespace-nowrap flex-1 sm:flex-none">
+            <TabsTrigger value="stats" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground w-full sm:w-auto">
               <Activity className="mr-2 h-4 w-4" />
               System Stats
             </TabsTrigger>

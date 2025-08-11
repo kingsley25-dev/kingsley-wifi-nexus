@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface LoginFormProps {
   onLogin: () => void;
@@ -13,7 +12,7 @@ interface LoginFormProps {
 }
 
 export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
-  const [emailOrUsername, setEmailOrUsername] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -22,60 +21,21 @@ export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const raw = emailOrUsername.trim();
-      const isAdminAlias = raw.toLowerCase() === "admin" && password === "kingsley123";
-      const mappedEmail = isAdminAlias ? "kingsleycorp25@gmail.com" : raw;
-      const mappedPassword = isAdminAlias ? "kingsley123" : password;
-
-      // Sign in with Supabase
-      let { data, error } = await supabase.auth.signInWithPassword({
-        email: mappedEmail,
-        password: mappedPassword,
+    // Simple admin credentials (in a real app, this would be more secure)
+    if (username === "admin" && password === "kingsley123") {
+      toast({
+        title: "Login Successful",
+        description: "Welcome to Kingsley Techlab Admin Portal",
       });
-
-      // If the account doesn't exist yet and the user used the admin alias, try to create it
-      if (error && isAdminAlias) {
-        const redirectUrl = `${window.location.origin}/`;
-        const signUpRes = await supabase.auth.signUp({
-          email: mappedEmail,
-          password: mappedPassword,
-          options: { emailRedirectTo: redirectUrl },
-        });
-        if (signUpRes.error) throw signUpRes.error;
-        // Ask the user to check email only if confirmation is enabled
-        toast({ title: "Admin User Created", description: "If email confirmation is enabled, please confirm the email before logging in." });
-        // Try sign-in again (in case confirmation is disabled)
-        const retry = await supabase.auth.signInWithPassword({ email: mappedEmail, password: mappedPassword });
-        data = retry.data; error = retry.error;
-      }
-
-      if (error) throw error;
-      const user = data.user;
-      if (!user) throw new Error("No user returned");
-
-      // Ensure admin mapping exists
-      const { data: adminRow } = await supabase
-        .from('admin_users')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!adminRow) {
-        await supabase.from('admin_users').insert({
-          user_id: user.id,
-          username: isAdminAlias ? 'admin' : (mappedEmail.split('@')[0] || 'admin'),
-          role: 'admin',
-        });
-      }
-
-      toast({ title: "Login Successful", description: "Welcome to Kingsley Techlab Admin Portal" });
       onLogin();
-    } catch (err: any) {
-      toast({ title: "Login Failed", description: err.message || "Invalid credentials", variant: "destructive" });
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast({
+        title: "Login Failed",
+        description: "Invalid credentials. Please try again.",
+        variant: "destructive",
+      });
     }
+    setIsLoading(false);
   };
 
   return (
@@ -105,16 +65,15 @@ export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-foreground">Username or Email</Label>
+                <Label htmlFor="username" className="text-foreground">Username</Label>
                 <Input
                   id="username"
                   type="text"
-                  value={emailOrUsername}
-                  onChange={(e) => setEmailOrUsername(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                   className="bg-input border-border text-foreground"
-                  placeholder="admin or kingsleycorp25@gmail.com"
-                  autoComplete="username"
+                  placeholder="Enter admin username"
                 />
               </div>
               <div className="space-y-2">
@@ -126,8 +85,7 @@ export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="bg-input border-border text-foreground"
-                  placeholder="Enter password"
-                  autoComplete="current-password"
+                  placeholder="Enter admin password"
                 />
               </div>
               <Button
@@ -138,6 +96,13 @@ export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
+            <div className="mt-4 p-4 bg-muted/20 rounded-lg border border-border">
+              <p className="text-sm text-muted-foreground text-center">
+                Demo Credentials:<br />
+                Username: <span className="text-primary font-medium">admin</span><br />
+                Password: <span className="text-primary font-medium">kingsley123</span>
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
