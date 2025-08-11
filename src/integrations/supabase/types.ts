@@ -169,34 +169,40 @@ export type Database = {
           created_at: string
           description: string | null
           duration_days: number
+          duration_hours: number | null
           features: Json | null
           id: string
           name: string
           popular: boolean | null
           price: number
           speed: string
+          speed_mbps: number | null
         }
         Insert: {
           created_at?: string
           description?: string | null
           duration_days: number
+          duration_hours?: number | null
           features?: Json | null
           id?: string
           name: string
           popular?: boolean | null
           price: number
           speed: string
+          speed_mbps?: number | null
         }
         Update: {
           created_at?: string
           description?: string | null
           duration_days?: number
+          duration_hours?: number | null
           features?: Json | null
           id?: string
           name?: string
           popular?: boolean | null
           price?: number
           speed?: string
+          speed_mbps?: number | null
         }
         Relationships: []
       }

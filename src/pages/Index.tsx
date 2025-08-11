@@ -4,6 +4,7 @@ import { UserPortal } from "@/components/UserPortal";
 import { LoginForm } from "@/components/LoginForm";
 import { Button } from "@/components/ui/button";
 import { Wifi, ShieldCheck } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<'home' | 'admin' | 'user' | 'adminLogin'>('home');
@@ -19,7 +20,8 @@ const Index = () => {
   }
 
   if (currentView === 'admin' && isAdminLoggedIn) {
-    return <AdminDashboard onLogout={() => {
+    return <AdminDashboard onLogout={async () => {
+      await supabase.auth.signOut();
       setIsAdminLoggedIn(false);
       setCurrentView('home');
     }} />;

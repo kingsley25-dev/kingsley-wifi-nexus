@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LoginFormProps {
   onLogin: () => void;
@@ -12,7 +13,7 @@ interface LoginFormProps {
 }
 
 export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -21,21 +22,38 @@ export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simple admin credentials (in a real app, this would be more secure)
-    if (username === "admin" && password === "kingsley123") {
-      toast({
-        title: "Login Successful",
-        description: "Welcome to Kingsley Techlab Admin Portal",
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
+      if (error) throw error;
+
+      const user = data.user;
+      if (!user) throw new Error("No user returned");
+
+      // Ensure admin_users entry exists (bootstrap allowed for your email)
+      const { data: adminRow } = await supabase
+        .from('admin_users')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!adminRow) {
+        await supabase.from('admin_users').insert({
+          user_id: user.id,
+          username: email.split('@')[0],
+          role: 'admin',
+        });
+      }
+
+      toast({ title: 'Login Successful', description: 'Welcome to Kingsley Techlab Admin Portal' });
       onLogin();
-    } else {
-      toast({
-        title: "Login Failed",
-        description: "Invalid credentials. Please try again.",
-        variant: "destructive",
-      });
+    } catch (err: any) {
+      toast({ title: 'Login Failed', description: err.message || 'Invalid credentials', variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -65,15 +83,16 @@ export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-foreground">Username</Label>
+                <Label htmlFor="email" className="text-foreground">Email</Label>
                 <Input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   className="bg-input border-border text-foreground"
-                  placeholder="Enter admin username"
+                  placeholder="kingsleycorp25@gmail.com"
+                  autoComplete="email"
                 />
               </div>
               <div className="space-y-2">
@@ -96,13 +115,6 @@ export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
-            <div className="mt-4 p-4 bg-muted/20 rounded-lg border border-border">
-              <p className="text-sm text-muted-foreground text-center">
-                Demo Credentials:<br />
-                Username: <span className="text-primary font-medium">admin</span><br />
-                Password: <span className="text-primary font-medium">kingsley123</span>
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
