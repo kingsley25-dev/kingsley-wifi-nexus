@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Users, Package, Settings, Activity } from "lucide-react";
+import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
+import { LogOut, Users, Package, Settings, Activity, Menu } from "lucide-react";
 import { UserManagement } from "./admin/UserManagement";
 import { PackageManagement } from "./admin/PackageManagement";
 import { SystemStats } from "./admin/SystemStats";
@@ -17,6 +18,7 @@ export const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
   const [activeUsers] = useState(23);
   const [totalRevenue] = useState(45600);
   const [todaysSales] = useState(8);
+  const [tabValue, setTabValue] = useState("users");
 
   return (
     <main className="min-h-screen bg-gradient-primary">
@@ -31,14 +33,87 @@ export const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
                 Admin Portal
               </Badge>
             </div>
-            <Button 
-              variant="outline" 
-              onClick={onLogout}
-              className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground w-full sm:w-auto"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              {/* Mobile: Quick actions drawer */}
+              <Drawer>
+                <DrawerTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="sm:hidden border-border text-foreground hover:bg-accent hover:text-accent-foreground w-full"
+                  >
+                    <Menu className="mr-2 h-4 w-4" />
+                    Actions
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent className="z-50">
+                  <DrawerHeader>
+                    <DrawerTitle>Admin Quick Actions</DrawerTitle>
+                  </DrawerHeader>
+                  <div className="px-4 pb-4 grid gap-3">
+                    <DrawerClose asChild>
+                      <Button
+                        variant="secondary"
+                        className="justify-start h-11"
+                        onClick={() => setTabValue("users")}
+                      >
+                        <Users className="mr-2 h-4 w-4" />
+                        User Management
+                      </Button>
+                    </DrawerClose>
+                    <DrawerClose asChild>
+                      <Button
+                        variant="secondary"
+                        className="justify-start h-11"
+                        onClick={() => setTabValue("packages")}
+                      >
+                        <Package className="mr-2 h-4 w-4" />
+                        Package Management
+                      </Button>
+                    </DrawerClose>
+                    <DrawerClose asChild>
+                      <Button
+                        variant="secondary"
+                        className="justify-start h-11"
+                        onClick={() => setTabValue("codes")}
+                      >
+                        <Settings className="mr-2 h-4 w-4" />
+                        Activation Codes
+                      </Button>
+                    </DrawerClose>
+                    <DrawerClose asChild>
+                      <Button
+                        variant="secondary"
+                        className="justify-start h-11"
+                        onClick={() => setTabValue("stats")}
+                      >
+                        <Activity className="mr-2 h-4 w-4" />
+                        System Stats
+                      </Button>
+                    </DrawerClose>
+                    <DrawerClose asChild>
+                      <Button
+                        variant="destructive"
+                        className="justify-start h-11"
+                        onClick={onLogout}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                      </Button>
+                    </DrawerClose>
+                  </div>
+                </DrawerContent>
+              </Drawer>
+
+              {/* Desktop: Logout button stays visible */}
+              <Button
+                variant="outline"
+                onClick={onLogout}
+                className="hidden sm:inline-flex border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -92,7 +167,7 @@ export const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="users" className="space-y-6">
+        <Tabs value={tabValue} onValueChange={setTabValue} className="space-y-6">
           <TabsList className="bg-secondary/50 backdrop-blur-sm border border-border flex flex-wrap gap-2 overflow-x-auto">
             <TabsTrigger value="users" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground w-full sm:w-auto">
               <Users className="mr-2 h-4 w-4" />
