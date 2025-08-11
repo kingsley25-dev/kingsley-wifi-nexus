@@ -30,7 +30,7 @@ interface PackageOption {
 }
 
 export const ActivationCodes = () => {
-  const [codes, setCodes] = useState<ActivationCode[]>([
+  const [codes, setCodes] = useState<ActivationCodeView[]>([
     {
       id: "1",
       code: "789123",
@@ -66,7 +66,7 @@ export const ActivationCodes = () => {
   const [emailsSent, setEmailsSent] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const sendEmailNotification = async (code: ActivationCode) => {
+  const sendEmailNotification = async (code: ActivationCodeView) => {
     // Simulate sending email to murithimarkray@gmail.com
     const emailContent = `
 New WiFi Package Purchase - Kingsley Techlab
@@ -119,7 +119,7 @@ The customer has been sent their activation code.
     const interval = setInterval(() => {
       // Simulate a new purchase occasionally
       if (Math.random() < 0.1) { // 10% chance every 30 seconds
-        const newCode: ActivationCode = {
+        const newCode: ActivationCodeView = {
           id: Date.now().toString(),
           code: Math.floor(100000 + Math.random() * 900000).toString(),
           phoneNumber: `079${Math.floor(1000000 + Math.random() * 9000000)}`,
