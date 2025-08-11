@@ -39,17 +39,19 @@ export const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
                 <DrawerTrigger asChild>
                   <Button
                     variant="outline"
-                    className="sm:hidden border-border text-foreground hover:bg-accent hover:text-accent-foreground w-full"
+                    className="sm:hidden h-10 w-10 p-0 border-border text-foreground hover:bg-accent hover:text-accent-foreground rounded-full"
+                    aria-label="Open admin actions"
+                    title="Actions"
                   >
-                    <Menu className="mr-2 h-4 w-4" />
-                    Actions
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Actions</span>
                   </Button>
                 </DrawerTrigger>
-                <DrawerContent className="z-50">
+                <DrawerContent className="z-[60] max-h-[85vh] overflow-y-auto">
                   <DrawerHeader>
                     <DrawerTitle>Admin Quick Actions</DrawerTitle>
                   </DrawerHeader>
-                  <div className="px-4 pb-4 grid gap-3">
+                  <div className="px-4 pb-6 grid gap-3 max-h-[70vh] overflow-y-auto overscroll-contain">
                     <DrawerClose asChild>
                       <Button
                         variant="secondary"
