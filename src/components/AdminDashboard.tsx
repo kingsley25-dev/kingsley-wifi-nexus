@@ -19,8 +19,8 @@ export const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
   const [todaysSales] = useState(8);
 
   return (
-    <div className="min-h-screen bg-gradient-primary">
-      <div className="border-b border-border bg-card/20 backdrop-blur-sm">
+    <main className="min-h-screen bg-gradient-primary">
+      <header className="border-b border-border bg-card/20 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center space-x-4">
@@ -41,7 +41,7 @@ export const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
             </Button>
           </div>
         </div>
-      </div>
+      </header>
 
       <div className="container mx-auto px-4 py-8">
         {/* Quick Stats */}
@@ -129,6 +129,6 @@ export const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </main>
   );
 };

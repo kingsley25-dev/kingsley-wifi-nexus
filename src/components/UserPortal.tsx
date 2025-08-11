@@ -147,7 +147,7 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
 
   if (isPurchaseComplete && activationCode) {
     return (
-      <div className="min-h-screen bg-gradient-primary flex items-center justify-center p-4 safe-px safe-pt safe-pb">
+      <main className="min-h-screen bg-gradient-primary flex items-center justify-center p-4 safe-px safe-pt safe-pb">
         <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm border-border shadow-navy">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
@@ -200,12 +200,12 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary p-4 safe-px safe-pt safe-pb">
+    <main className="min-h-screen bg-gradient-primary p-4 safe-px safe-pt safe-pb">
       <div className="container mx-auto">
         <Button 
           variant="ghost" 
@@ -217,10 +217,10 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
         </Button>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-gold bg-clip-text text-transparent mb-4 text-balance leading-tight">
+          <h1 className="text-fluid-title font-bold bg-gradient-gold bg-clip-text text-transparent mb-4 text-balance leading-tight">
             Choose Your WiFi Package
           </h1>
-          <p className="text-muted-foreground text-lg text-balance">
+          <p className="text-fluid-body text-muted-foreground">
             Select the perfect internet package for your needs
           </p>
         </div>
@@ -384,6 +384,6 @@ export const UserPortal = ({ onBack }: UserPortalProps) => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };

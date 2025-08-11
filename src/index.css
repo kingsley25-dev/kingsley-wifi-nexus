@@ -134,4 +134,14 @@ All colors MUST be HSL.
   }
   .safe-pt { padding-top: env(safe-area-inset-top); }
   .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+
+  /* Fluid typography utilities */
+  .text-fluid-title {
+    font-size: clamp(1.75rem, 2.5vw + 1rem, 3rem); /* 28px -> 48px */
+    line-height: 1.15;
+  }
+  .text-fluid-body {
+    font-size: clamp(1rem, 0.5vw + 0.9rem, 1.125rem); /* 16px -> 18px */
+    line-height: 1.6;
+  }
 }
