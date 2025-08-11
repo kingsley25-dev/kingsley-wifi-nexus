@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Package, Plus, Edit, Trash2, Wifi } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 interface WifiPackage {
   id: string;
@@ -20,15 +18,16 @@ interface WifiPackage {
 }
 
 export const PackageManagement = () => {
-  interface WifiPackage {
-    id: string;
-    name: string;
-    price: number;
-    speed: number; // in Mbps
-    duration: number; // in hours
-    description: string;
-  }
-
+  const [packages, setPackages] = useState<WifiPackage[]>([
+    { id: "1", name: "Basic Starter", price: 20, speed: 10, duration: 8, description: "Perfect for browsing and social media" },
+    { id: "2", name: "Standard", price: 35, speed: 15, duration: 6, description: "Good for streaming and downloads" },
+    { id: "3", name: "Premium", price: 50, speed: 25, duration: 12, description: "High-speed for heavy usage" },
+    { id: "4", name: "Ultra Fast", price: 80, speed: 35, duration: 24, description: "Maximum speed for power users" },
+    { id: "5", name: "Business", price: 120, speed: 50, duration: 48, description: "Professional package for businesses" },
+    { id: "6", name: "Student Special", price: 15, speed: 8, duration: 4, description: "Affordable option for students" },
+    { id: "7", name: "Night Owl", price: 30, speed: 20, duration: 10, description: "Perfect for late night browsing" }
+  ]);
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPackage, setEditingPackage] = useState<WifiPackage | null>(null);
   const [newPackage, setNewPackage] = useState<Omit<WifiPackage, 'id'>>({
@@ -39,118 +38,53 @@ export const PackageManagement = () => {
     description: ""
   });
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const mapDbToUi = (row: any): WifiPackage => ({
-    id: row.id,
-    name: row.name,
-    price: Number(row.price) || 0,
-    speed: (row.speed_mbps ?? parseInt(String(row.speed).replace(/[^0-9]/g, ""))) || 0,
-    duration: row.duration_hours ?? (row.duration_days ? row.duration_days * 24 : 0),
-    description: row.description ?? "",
-  });
-
-  const { data: packages = [], isLoading } = useQuery({
-    queryKey: ["packages"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("packages").select("*").order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []).map(mapDbToUi);
-    },
-  });
-
-  const addMutation = useMutation({
-    mutationFn: async (pkg: Omit<WifiPackage, "id">) => {
-      const payload = {
-        name: pkg.name,
-        price: pkg.price,
-        speed: `${pkg.speed} Mbps`,
-        speed_mbps: pkg.speed,
-        duration_hours: pkg.duration,
-        duration_days: Math.max(1, Math.ceil(pkg.duration / 24)),
-        description: pkg.description,
-        popular: false,
-      };
-      const { error } = await supabase.from("packages").insert(payload);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["packages"] });
-      toast({ title: "Package Added", description: `${newPackage.name} saved to database` });
-    },
-    onError: (err: any) => {
-      toast({ title: "Add failed", description: err?.message ?? "Unauthorized. Sign in as admin.", variant: "destructive" });
-    },
-  });
-
-  const editMutation = useMutation({
-    mutationFn: async (pkg: WifiPackage) => {
-      const payload = {
-        name: pkg.name,
-        price: pkg.price,
-        speed: `${pkg.speed} Mbps`,
-        speed_mbps: pkg.speed,
-        duration_hours: pkg.duration,
-        duration_days: Math.max(1, Math.ceil(pkg.duration / 24)),
-        description: pkg.description,
-      };
-      const { error } = await supabase.from("packages").update(payload).eq("id", pkg.id);
-      if (error) throw error;
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["packages"] });
-      toast({ title: "Package Updated", description: `${variables.name} updated in database` });
-    },
-    onError: (err: any) => {
-      toast({ title: "Update failed", description: err?.message ?? "Unauthorized. Sign in as admin.", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("packages").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["packages"] });
-      toast({ title: "Package Deleted", description: "Package removed from database" });
-    },
-    onError: (err: any) => {
-      toast({ title: "Delete failed", description: err?.message ?? "Unauthorized. Sign in as admin.", variant: "destructive" });
-    },
-  });
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("packages_changes")
-      .on("postgres_changes", { event: "*", schema: "public", table: "packages" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["packages"] });
-      })
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
-  const handleAddPackage = async () => {
+  const handleAddPackage = () => {
     if (!newPackage.name || newPackage.price <= 0 || newPackage.speed <= 0 || newPackage.duration <= 0) {
-      toast({ title: "Validation Error", description: "Please fill all fields with valid values", variant: "destructive" });
+      toast({
+        title: "Validation Error",
+        description: "Please fill all fields with valid values",
+        variant: "destructive"
+      });
       return;
     }
-    await addMutation.mutateAsync(newPackage);
+
+    const packageToAdd: WifiPackage = {
+      id: Date.now().toString(),
+      ...newPackage
+    };
+
+    setPackages([...packages, packageToAdd]);
     setNewPackage({ name: "", price: 0, speed: 0, duration: 0, description: "" });
     setIsDialogOpen(false);
+    
+    toast({
+      title: "Package Added",
+      description: `${newPackage.name} has been added successfully`,
+    });
   };
 
-  const handleEditPackage = async () => {
+  const handleEditPackage = () => {
     if (!editingPackage) return;
-    await editMutation.mutateAsync(editingPackage);
+
+    setPackages(packages.map(pkg => 
+      pkg.id === editingPackage.id ? editingPackage : pkg
+    ));
     setEditingPackage(null);
     setIsDialogOpen(false);
+    
+    toast({
+      title: "Package Updated",
+      description: `${editingPackage.name} has been updated successfully`,
+    });
   };
 
-  const handleDeletePackage = async (id: string) => {
-    await deleteMutation.mutateAsync(id);
+  const handleDeletePackage = (id: string) => {
+    setPackages(packages.filter(pkg => pkg.id !== id));
+    toast({
+      title: "Package Deleted",
+      description: "Package has been removed successfully",
+    });
   };
 
   const openEditDialog = (pkg: WifiPackage) => {
@@ -222,7 +156,7 @@ export const PackageManagement = () => {
                         type="number"
                         value={currentPackage.price}
                         onChange={(e) => isEditing 
-                          ? setEditingPackage({...editingPackage!, price: parseInt(e.target.value) || 0})
+                          ? setEditingPackage({...editingPackage, price: parseInt(e.target.value) || 0})
                           : setNewPackage({...newPackage, price: parseInt(e.target.value) || 0})
                         }
                         className="bg-input border-border text-foreground"
@@ -235,7 +169,7 @@ export const PackageManagement = () => {
                         type="number"
                         value={currentPackage.speed}
                         onChange={(e) => isEditing 
-                          ? setEditingPackage({...editingPackage!, speed: parseInt(e.target.value) || 0})
+                          ? setEditingPackage({...editingPackage, speed: parseInt(e.target.value) || 0})
                           : setNewPackage({...newPackage, speed: parseInt(e.target.value) || 0})
                         }
                         className="bg-input border-border text-foreground"
@@ -248,7 +182,7 @@ export const PackageManagement = () => {
                         type="number"
                         value={currentPackage.duration}
                         onChange={(e) => isEditing 
-                          ? setEditingPackage({...editingPackage!, duration: parseInt(e.target.value) || 0})
+                          ? setEditingPackage({...editingPackage, duration: parseInt(e.target.value) || 0})
                           : setNewPackage({...newPackage, duration: parseInt(e.target.value) || 0})
                         }
                         className="bg-input border-border text-foreground"
@@ -261,7 +195,7 @@ export const PackageManagement = () => {
                       id="description"
                       value={currentPackage.description}
                       onChange={(e) => isEditing 
-                        ? setEditingPackage({...editingPackage!, description: e.target.value})
+                        ? setEditingPackage({...editingPackage, description: e.target.value})
                         : setNewPackage({...newPackage, description: e.target.value})
                       }
                       className="bg-input border-border text-foreground"
@@ -302,57 +236,47 @@ export const PackageManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading ? (
-                  <TableRow className="border-border">
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">Loading packages...</TableCell>
+                {packages.map((pkg) => (
+                  <TableRow key={pkg.id} className="border-border">
+                    <TableCell className="font-medium text-foreground">
+                      <div className="flex items-center">
+                        <Wifi className="mr-2 h-4 w-4 text-primary" />
+                        {pkg.name}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-foreground font-semibold">
+                      KShs {pkg.price}
+                    </TableCell>
+                    <TableCell className="text-foreground">
+                      {pkg.speed} Mbps
+                    </TableCell>
+                    <TableCell className="text-foreground">
+                      {pkg.duration} hours
+                    </TableCell>
+                    <TableCell className="text-muted-foreground max-w-xs truncate">
+                      {pkg.description}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditDialog(pkg)}
+                          className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeletePackage(pkg.id)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
-                ) : packages.length === 0 ? (
-                  <TableRow className="border-border">
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">No packages found</TableCell>
-                  </TableRow>
-                ) : (
-                  packages.map((pkg) => (
-                    <TableRow key={pkg.id} className="border-border">
-                      <TableCell className="font-medium text-foreground">
-                        <div className="flex items-center">
-                          <Wifi className="mr-2 h-4 w-4 text-primary" />
-                          {pkg.name}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-foreground font-semibold">
-                        KShs {pkg.price}
-                      </TableCell>
-                      <TableCell className="text-foreground">
-                        {pkg.speed} Mbps
-                      </TableCell>
-                      <TableCell className="text-foreground">
-                        {pkg.duration} hours
-                      </TableCell>
-                      <TableCell className="text-muted-foreground max-w-xs truncate">
-                        {pkg.description}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openEditDialog(pkg)}
-                            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                          >
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeletePackage(pkg.id)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
+                ))}
               </TableBody>
             </Table>
           </div>

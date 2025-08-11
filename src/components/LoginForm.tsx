@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface LoginFormProps {
   onLogin: () => void;
@@ -15,7 +14,6 @@ interface LoginFormProps {
 export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("kingsleycorp25@gmail.com");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -38,29 +36,6 @@ export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
       });
     }
     setIsLoading(false);
-  };
-
-  const handleMagicLink = async () => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: window.location.origin },
-      });
-      if (error) throw error;
-      toast({
-        title: "Magic link sent",
-        description: `Check ${email} to continue.`,
-      });
-    } catch (err: any) {
-      toast({
-        title: "Sign-in failed",
-        description: err?.message ?? "Could not send magic link",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -121,34 +96,12 @@ export const LoginForm = ({ onLogin, onBack }: LoginFormProps) => {
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
-            <div className="mt-4 space-y-3">
-              <div className="p-4 bg-muted/20 rounded-lg border border-border">
-                <p className="text-sm text-muted-foreground">
-                  Admin email login (recommended for live writes):
-                </p>
-                <div className="mt-2 flex gap-2">
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-input border-border text-foreground flex-1"
-                    placeholder="admin@example.com"
-                  />
-                  <Button onClick={handleMagicLink} disabled={isLoading} className="bg-primary text-primary-foreground">
-                    Send magic link
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Only authorized admins can write to the database.
-                </p>
-              </div>
-              <div className="p-4 bg-muted/20 rounded-lg border border-border">
-                <p className="text-sm text-muted-foreground text-center">
-                  Demo Credentials:<br />
-                  Username: <span className="text-primary font-medium">admin</span><br />
-                  Password: <span className="text-primary font-medium">kingsley123</span>
-                </p>
-              </div>
+            <div className="mt-4 p-4 bg-muted/20 rounded-lg border border-border">
+              <p className="text-sm text-muted-foreground text-center">
+                Demo Credentials:<br />
+                Username: <span className="text-primary font-medium">admin</span><br />
+                Password: <span className="text-primary font-medium">kingsley123</span>
+              </p>
             </div>
           </CardContent>
         </Card>
