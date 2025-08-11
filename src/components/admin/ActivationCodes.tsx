@@ -10,7 +10,7 @@ import { Search, Key, Mail, Copy, CheckCircle, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-interface ActivationCode {
+interface ActivationCodeView {
   id: string;
   code: string;
   phoneNumber: string;
@@ -19,6 +19,14 @@ interface ActivationCode {
   generatedAt: string;
   isUsed: boolean;
   usedAt?: string;
+}
+
+interface PackageOption {
+  id: string;
+  name: string;
+  price: number;
+  duration_hours: number | null;
+  duration_days: number | null;
 }
 
 export const ActivationCodes = () => {
